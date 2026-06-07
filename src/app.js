@@ -14,6 +14,7 @@ app.use(express.json());
 // Rutas
 app.use("/api/users", userRoutes);
 app.use("/api/plans", planRoutes);
+app.use("/api/salas", salaRouters);
 
 // Ruta base
 app.get('/', (req, res) => {
