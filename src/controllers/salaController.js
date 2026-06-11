@@ -1,8 +1,8 @@
-import { getSala, getSalaById, createSalaService, updateSalaService, deleteSalaService } from "../services/salaService.js";
+import { getSalas, getSalaById, createSalaService, updateSalaService, deleteSalaService } from "../services/salaService.js";
 
 export async function getSalasController(req, res) {
     try {
-        res.json(await getSala());
+        res.json(await getSalas());
     } catch (error) {
         res.status(500).json({ message: "Error al obtener salas"});
     }
@@ -30,6 +30,7 @@ export async function createSalaController(req, res) {
         const result = await createSalaService({ idHost, nombre, tipoAct, intereses, restricciones, ubicacion, fecha, hora, presupuesto });
         res.status(201).json({ message: "Sala creada exitosamente", salaId: result.insertedId });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: "Error al crear sala"});
     }
 }
