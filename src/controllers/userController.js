@@ -38,14 +38,14 @@ export async function loginUserController(req, res) {
 }
 
 export async function registerUserController(req, res) {
-    const {name, email, password} = req.body;
+    const {name, email, password, fechaNacimiento} = req.body;
 
     if(!name || !email || !password) {
         return res.status(400).json({message: "Name, email y password son requeridos"});
     }
 
     try {
-        const result = await registerUserService({name, email, password});
+        const result = await registerUserService({name, email, password, fechaNacimiento});
         res.status(201).json({message: "Usuario registrado exitosamente", userId: result.insertedId});
     } catch (error) {
         if(error.message === 'El email ya está registrado') {

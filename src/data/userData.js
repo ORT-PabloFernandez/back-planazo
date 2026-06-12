@@ -4,20 +4,20 @@ import bcrypt from "bcrypt";
 
 
 export async function findAllUsers() {
-     await connectToDatabase();
+    await connectToDatabase();
     const db = getDb();
     const users = await db.collection('users').find().toArray();
     return users;
 }
 
 export async function findUserById(id) {
-     await connectToDatabase();
+    await connectToDatabase();
     const db = getDb();
     const user = db.collection('users').findOne({ _id: new ObjectId(id) });
     return user;
 }
 
-export async function registerUser({name, email, password}) {
+export async function registerUser({name, email, password, fechaNacimiento, foto}) {
     await connectToDatabase();
     const db = getDb();
 
@@ -32,7 +32,11 @@ export async function registerUser({name, email, password}) {
     const newUser = {
         name, 
         email,
-        password : hashedPassword
+        password : hashedPassword,
+        historialPlanes: [],
+        fechaNacimiento: fechaNacimiento,
+        foto: null,
+        preferencias: []
     };
     const result = await db.collection('users').insertOne(newUser);
 
@@ -40,7 +44,7 @@ export async function registerUser({name, email, password}) {
 }
 
 export async function findByCredentials(email, password) {
-     await connectToDatabase();
+    await connectToDatabase();
     const db = getDb();
     const user = await db.collection('users').findOne({ email });
     if(!user){

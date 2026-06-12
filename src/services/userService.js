@@ -13,9 +13,9 @@ export async function loginUserService(email, password) {
     return userWithoutPassword;
 }
 
-export async function registerUserService({name, email, password}) {
+export async function registerUserService({name, email, password, fechaNacimiento}) {
     try {
-        return await registerUser({name, email, password});
+        return await registerUser({name, email, password, fechaNacimiento});
         
     } catch (error) {
         if(error.message === 'El email ya está registrado') {

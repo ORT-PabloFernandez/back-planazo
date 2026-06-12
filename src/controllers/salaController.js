@@ -37,10 +37,10 @@ export async function createSalaController(req, res) {
 
 //TODO
 export async function agregarParticipanteController(req, res) {
-    //como manejamos aca el tema seguridad con el id del participante? lo pasamos por body o lo sacamos del token? 
     try {
     const sala = await getSalaById(req.params.id);
     const participante = req.body.idParticipante;
+    const existe = await getUserById(participante);
 
     if (!sala) {
         return res.status(404).json({ message: "Sala no encontrada" });
@@ -48,8 +48,11 @@ export async function agregarParticipanteController(req, res) {
     if(!participante) {
         return res.status(400).json({ message: "ID del participante es requerido" });
     }
+    if(!existe){
+        return res.status(404).json({ message: "Usuario no registrado" });
+    }
     if (sala.participantes.includes(participante)) {
-        return res.status(400).json({ message: "El participante ya estÃ¡ en la sala" });
+        return res.status(400).json({ message: "El participante ya esta en la sala" });
     }
 
     sala.participantes.push(participante);
