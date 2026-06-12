@@ -1,4 +1,5 @@
 import { getSalas, getSalaById, createSalaService, updateSalaService, deleteSalaService } from "../services/salaService.js";
+import { sugerirPlanes } from "./planController.js";
 
 export async function getSalasController(req, res) {
     try {
@@ -35,7 +36,6 @@ export async function createSalaController(req, res) {
     }
 }
 
-//TODO
 export async function agregarParticipanteController(req, res) {
     try {
     const sala = await getSalaById(req.params.id);
@@ -67,7 +67,27 @@ export async function agregarParticipanteController(req, res) {
 export async function planGanadorController(req, res) {}
 
 //TODO
-export async function agregarPlanController(req, res) {}
+export async function agregarPlanController(req, res) {
+    try {
+        const sala = await getSalaById(req.params.id);
+        if (!sala) {
+            return res.status(404).json({ message: "Sala no encontrada" });
+        }
+
+        const { participantes, preferencias, restriccionesComida, presupuesto, zona, disponibilidad, edadPromedio } = sala 
+        const cantidadParticipantes = participantes.length; 
+        const planes = await 
+        sugerirPlanes({ cantidadParticipantes, preferencias, restriccionesComida, presupuesto, zona, disponibilidad, edadPromedio })
+        
+        console.log(planes);
+        sala.planesSugeridos = planes;
+        await updateSalaService(req.params.id, sala);
+        res.json({ message: "Planes agregados exitosamente" });
+    } catch {
+        res.status(500).json({ message: "Error al agregar planes"});
+    }
+}
+
 
 export async function deleteSalaController(req, res) {
     try {

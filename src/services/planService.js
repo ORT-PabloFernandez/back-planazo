@@ -28,23 +28,17 @@ No incluyas texto fuera del JSON.`;
 
 function buildUserPrompt(datos) {
     const {
-        cantidadChicos = 0,
-        cantidadChicas = 0,
         cantidadPersonas,
         preferencias = [],
         restriccionesComida = [],
-        presupuesto = "medio",
-        zona = "cualquier zona",
-        disponibilidad = "cualquier horario",
+        presupuesto,
+        zona,
+        disponibilidad,
         edadPromedio,
-        ubicacion,
     } = datos;
 
-    const total = cantidadPersonas ?? cantidadChicos + cantidadChicas;
-    const composicion =
-        cantidadPersonas != null
-            ? `${total} personas`
-            : `${total} personas (${cantidadChicos} chicos y ${cantidadChicas} chicas)`;
+    const total = cantidadPersonas;
+    const composicion = `${total} personas`;
 
     const lines = [
         `Grupo: ${composicion}.`,
@@ -57,9 +51,6 @@ function buildUserPrompt(datos) {
             : null,
         `Presupuesto: ${presupuesto}.`,
         `Zona preferida: ${zona}.`,
-        ubicacion
-            ? `Ubicación actual del grupo: ${ubicacion}. Priorizá opciones cercanas a esta ubicación.`
-            : null,
         `Disponibilidad: ${disponibilidad}.`,
     ]
         .filter(Boolean)

@@ -55,4 +55,4 @@ export async function deleteSala(id) {
 
 //deuda tecnincaaaaaa
 export async function contarVotos(idSala) {}
-   
+
