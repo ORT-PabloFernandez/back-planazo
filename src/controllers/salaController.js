@@ -97,3 +97,14 @@ export async function deleteSalaController(req, res) {
         res.status(500).json({ message: "Error al eliminar sala"});
     }
 }
+export async function obtenerPlanesController(req,res){
+    try {
+        const sala = await getSalaById(req.params.id);
+        if (!sala) {
+            return res.status(404).json({ message: "Sala no encontrada" });
+        }
+        res.json(sala.planesSugeridos || []);
+    }catch(error){
+        res.status(500).json({ message: "Error al obtener planes"});
+    }
+}
