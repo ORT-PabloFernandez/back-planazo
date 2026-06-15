@@ -1,5 +1,6 @@
-import { getSalas, getSalaById, createSalaService, updateSalaService, deleteSalaService } from "../services/salaService.js";
+import { getSalas, getSalaById, createSalaService, updateSalaService, deleteSalaService, sumarVotoService} from "../services/salaService.js";
 import { sugerirPlanes } from "./planController.js";
+import {ObjectId} from "mongodb";
 
 export async function getSalasController(req, res) {
     try {
@@ -79,8 +80,8 @@ export async function agregarPlanController(req, res) {
         const planes = await 
         sugerirPlanes({ cantidadParticipantes, preferencias, restriccionesComida, presupuesto, zona, disponibilidad, edadPromedio })
         
-        console.log(planes);
-        sala.planesSugeridos = planes;
+        const planesConId = planes.map((plan) => ({ _id: new ObjectId(), ...plan, votos: 0 }));
+        sala.planesSugeridos = planesConId;
         await updateSalaService(req.params.id, sala);
         res.json({ message: "Planes agregados exitosamente" });
     } catch {
@@ -106,5 +107,13 @@ export async function obtenerPlanesController(req,res){
         res.json(sala.planesSugeridos || []);
     }catch(error){
         res.status(500).json({ message: "Error al obtener planes"});
+    }
+}
+export async function votarPlanController(req,res){
+    try{
+        const plan = await sumarVotoService(req.params.idSala, req.params.idPlan);
+        res.json({ message: "Voto registrado exitosamente" , plan});
+    }catch(error){
+        res.status(500).json({ message: "Error al votar plan"});
     }
 }

@@ -52,7 +52,19 @@ export async function deleteSala(id) {
     const result = await db.collection('salas').deleteOne({ _id: new ObjectId(id) });
     return result;
 }
-
+export async function sumarVoto(idSala, idPlan) {
+    await connectToDatabase();
+    const db = getDb();
+    const sala = await db.collection('salas').findOne({ _id: new ObjectId(idSala) });
+    const plan = sala.planesSugeridos.find(plan => plan._id.toString() === idPlan);
+    if (plan) {
+        plan.votos++;
+        await db.collection('salas').updateOne({ _id: new ObjectId(sala._id) }, { $set: { planesSugeridos: sala.planesSugeridos } });
+        return plan;
+    } else {
+        throw new Error("Plan no encontrado");
+    }
+}
 //deuda tecnincaaaaaa
 export async function contarVotos(idSala) {}
 

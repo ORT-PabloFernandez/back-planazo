@@ -21,7 +21,6 @@ Respondé SIEMPRE con un JSON válido con la siguiente estructura:
       "costoEstimado": "string (ej: $, $$, $$$)",
       "duracionEstimada": "string (ej: 2-3 horas)",
       "aptoPara": "string describiendo para quién es ideal"
-      "votos": "numerico, inicia en cero si o si para poder incrementarlo luego"
     }
   ]
 }
