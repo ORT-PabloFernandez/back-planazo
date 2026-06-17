@@ -64,10 +64,36 @@ export async function agregarParticipanteController(req, res) {
     } 
 }
 
-//TODO
-export async function planGanadorController(req, res) {}
+export async function obtenerPlanGanadorController(req, res) {
+    try {
+        const sala = await getSalaById(req.params.id);
 
-//TODO
+        if (!sala) {
+            return res.status(404).json({ message: "Sala no encontrada" });
+        }
+        if (sala.planesSugeridos.length === 0) {
+            return res.status(400).json({ message: "No hay planes sugeridos en esta sala" });
+        }
+
+        const maxVotos = Math.max(...sala.planesSugeridos.map(plan => plan.votos));
+        const planesMax = sala.planesSugeridos.filter(plan => plan.votos === maxVotos);
+        let resul;
+
+        if (planesMax.length > 1) {
+            sala.planesSugeridos = planesMax.map(plan => ({ ...plan, votos: 0 })); 
+            resul = { empate: true, planes: planesMax };
+        } else {
+            sala.planGanador = planesMax[0];
+            resul = { empate: false, ganador: planesMax[0] };
+        }
+
+        await updateSalaService(req.params.id, sala);
+        res.json(resul);
+    } catch (error) {
+        res.status(500).json({ message: "Error interno al obtener el plan ganador" });
+    }
+}
+
 export async function agregarPlanController(req, res) {
     try {
         const sala = await getSalaById(req.params.id);
@@ -89,7 +115,6 @@ export async function agregarPlanController(req, res) {
     }
 }
 
-
 export async function deleteSalaController(req, res) {
     try {
         await deleteSalaService(req.params.id);
@@ -98,6 +123,7 @@ export async function deleteSalaController(req, res) {
         res.status(500).json({ message: "Error al eliminar sala"});
     }
 }
+
 export async function obtenerPlanesController(req,res){
     try {
         const sala = await getSalaById(req.params.id);
@@ -109,6 +135,7 @@ export async function obtenerPlanesController(req,res){
         res.status(500).json({ message: "Error al obtener planes"});
     }
 }
+
 export async function votarPlanController(req,res){
     try{
         const plan = await sumarVotoService(req.params.idSala, req.params.idPlan);
