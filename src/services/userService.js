@@ -1,4 +1,4 @@
-import { findAllUsers, findByCredentials, registerUser, findUserById } from "../data/userData.js";
+import { findAllUsers, findByCredentials, registerUser, findUserById, updateUserData } from "../data/userData.js";
 
 export async function getUsers() {
     return await findAllUsers();        
@@ -26,4 +26,7 @@ export async function registerUserService({name, email, password, fechaNacimient
 }
 export async function getUserByIdService(id) {
    return await findUserById(id);
+}
+export async function updateUserService(id, data) {
+    return await updateUserData(id, data);
 }
