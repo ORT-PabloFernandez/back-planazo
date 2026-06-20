@@ -1,6 +1,7 @@
 import { getSalas, getSalaById, createSalaService, updateSalaService, deleteSalaService, sumarVotoService} from "../services/salaService.js";
 import { sugerirPlanes } from "./planController.js";
 import {ObjectId} from "mongodb";
+import { findUserById } from "../data/userData.js";
 
 export async function getSalasController(req, res) {
     try {
@@ -41,7 +42,7 @@ export async function agregarParticipanteController(req, res) {
     try {
     const sala = await getSalaById(req.params.id);
     const participante = req.body.idParticipante;
-    const existe = await getUserById(participante);
+    const existe = await findUserById(participante);
 
     if (!sala) {
         return res.status(404).json({ message: "Sala no encontrada" });
