@@ -11,7 +11,7 @@ salaRouters.put('/:idSala/votarPlan/:idPlan', authMiddleware, votarPlanControlle
 salaRouters.put('/sugerir/:id',authMiddleware, agregarPlanController);
 salaRouters.delete('/borrarSala/:id', authMiddleware, deleteSalaController);
 salaRouters.put('/agregarParticipante/:id', authMiddleware, agregarParticipanteController);
-salaRouters.put('/planGanador/:id', authMiddleware, obtenerPlanGanadorController);
+salaRouters.put('/planGanador/:id', obtenerPlanGanadorController);
 salaRouters.get('/:id', getSalaByIdController);
 
 export default salaRouters; 

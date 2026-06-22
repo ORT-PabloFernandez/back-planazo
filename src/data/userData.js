@@ -56,3 +56,9 @@ export async function findByCredentials(email, password) {
     }
     return user;
 }
+export async function updateUserData(id, userActualizado) {
+    await connectToDatabase();
+    const db = getDb();
+    const result = await db.collection('users').updateOne({ _id: new ObjectId(id) }, { $set: userActualizado });
+    return result;
+}

@@ -1,4 +1,4 @@
-import { getUsers, registerUserService, loginUserService } from "../services/userService.js";
+import { getUsers, registerUserService, loginUserService, getUserByIdService } from "../services/userService.js";
 import jwt from "jsonwebtoken";
 
 export async function getAllUsers(req, res) {
@@ -11,7 +11,12 @@ export async function getAllUsers(req, res) {
 }
 
 export async function getUserById(req, res) {
-    res.json({message: `Usuario con ID ${req.params.id}`});
+    try{
+        const user = await getUserByIdService(req.params.id);
+        res.json(user);
+    }catch(error){
+        res.status(404).json({message: "Usuario no encontrado"});
+    }
 }
 
 export async function loginUserController(req, res) {

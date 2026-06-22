@@ -1,4 +1,5 @@
 import { getSalas, getSalaById, createSalaService, updateSalaService, deleteSalaService, sumarVotoService} from "../services/salaService.js";
+import {updateUserService} from "../services/userService.js";
 import { sugerirPlanes } from "./planController.js";
 import {ObjectId} from "mongodb";
 import { findUserById } from "../data/userData.js";
@@ -86,6 +87,7 @@ export async function obtenerPlanGanadorController(req, res) {
         } else {
             sala.planGanador = planesMax[0];
             resul = { empate: false, ganador: planesMax[0] };
+           // await agregarPlanHistorial(sala);        
         }
 
         await updateSalaService(req.params.id, sala);
@@ -94,6 +96,23 @@ export async function obtenerPlanGanadorController(req, res) {
         res.status(500).json({ message: "Error interno al obtener el plan ganador" });
     }
 }
+/* export async function agregarPlanHistorial(sala) {
+    const planGanador = sala.planGanador;
+    if (!planGanador) {
+        throw new Error("No hay plan ganador para agregar al historial");
+    }
+
+    const ids = [...new Set([sala.idHost, ...(sala.participantes || [])].filter(Boolean))];
+
+    for (const participanteId of ids) {
+        const user = await findUserById(participanteId);
+        if (!user) continue;
+
+        const historialP = [...(user.historialPlanes || []), planGanador];
+        await updateUserService(user._id, { historialPlanes: historialP });
+    }
+} */
+
 
 export async function agregarPlanController(req, res) {
     try {
