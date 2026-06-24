@@ -77,6 +77,10 @@ export async function obtenerPlanGanadorController(req, res) {
             return res.status(400).json({ message: "No hay planes sugeridos en esta sala" });
         }
 
+        if(!sala.planGanador) {
+            return res.status(400).json({ message: "Ya hay un plan ganador en esta sala" });
+        }
+
         const maxVotos = Math.max(...sala.planesSugeridos.map(plan => plan.votos));
         const planesMax = sala.planesSugeridos.filter(plan => plan.votos === maxVotos);
         let resul;
@@ -96,6 +100,8 @@ export async function obtenerPlanGanadorController(req, res) {
         res.status(500).json({ message: "Error interno al obtener el plan ganador" });
     }
 }
+
+
 export async function agregarPlanHistorial(sala) {
     const planGanador = sala.planGanador;
     if (!planGanador) {
