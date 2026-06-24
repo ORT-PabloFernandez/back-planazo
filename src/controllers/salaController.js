@@ -87,7 +87,7 @@ export async function obtenerPlanGanadorController(req, res) {
         } else {
             sala.planGanador = planesMax[0];
             resul = { empate: false, ganador: planesMax[0] };
-           // await agregarPlanHistorial(sala);        
+            await agregarPlanHistorial(sala);
         }
 
         await updateSalaService(req.params.id, sala);
@@ -96,13 +96,16 @@ export async function obtenerPlanGanadorController(req, res) {
         res.status(500).json({ message: "Error interno al obtener el plan ganador" });
     }
 }
-/* export async function agregarPlanHistorial(sala) {
+export async function agregarPlanHistorial(sala) {
     const planGanador = sala.planGanador;
     if (!planGanador) {
         throw new Error("No hay plan ganador para agregar al historial");
     }
-
-    const ids = [...new Set([sala.idHost, ...(sala.participantes || [])].filter(Boolean))];
+    if(sala.participantes.length === 0) {
+        throw new Error("No hay participantes para agregar al historial");
+    }
+    
+    const ids = sala.participantes.filter(id => id !== null);
 
     for (const participanteId of ids) {
         const user = await findUserById(participanteId);
@@ -111,7 +114,7 @@ export async function obtenerPlanGanadorController(req, res) {
         const historialP = [...(user.historialPlanes || []), planGanador];
         await updateUserService(user._id, { historialPlanes: historialP });
     }
-} */
+}
 
 
 export async function agregarPlanController(req, res) {

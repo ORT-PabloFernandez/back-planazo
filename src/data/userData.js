@@ -13,7 +13,7 @@ export async function findAllUsers() {
 export async function findUserById(id) {
     await connectToDatabase();
     const db = getDb();
-    const user = db.collection('users').findOne({ _id: new ObjectId(id) });
+    const user = await db.collection('users').findOne({ _id: new ObjectId(id) });
     return user;
 }
 
