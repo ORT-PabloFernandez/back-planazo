@@ -1,4 +1,4 @@
-import { getUsers, registerUserService, loginUserService, getUserByIdService } from "../services/userService.js";
+import { getUsers, registerUserService, loginUserService, getUserByIdService, updateUserService } from "../services/userService.js";
 import jwt from "jsonwebtoken";
 
 export async function getAllUsers(req, res) {
@@ -58,5 +58,29 @@ export async function registerUserController(req, res) {
         }
         console.error(error);
         res.status(500).json({message: "Error interno en el registro de usuario"});
+    }
+}
+
+export async function agregarPreferenciasController(req, res) {
+    try{
+    const {preferencias} = req.body;
+    const user = await getUserByIdService(req.params.id);
+
+    if(!user){
+        return res.status(400).json({message: "El usuario no existe"});
+    }
+
+    if(!preferencias) {
+        return res.status(400).json({message: "Se debe agregar una preferencia"});
+    }
+
+    preferencias.forEach(preferencia => {
+        user.preferencias.push(preferencia);
+    });
+    
+    await updateUserService(req.params.id, user);
+    res.status(201).json({message: "Preferencias agregadas exitosamente"});
+    } catch(error){
+        res.status(500).json({message: "Error interno al agregar preferencias"});
     }
 }
