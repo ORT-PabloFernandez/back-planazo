@@ -31,7 +31,7 @@ export async function createSala({idHost, nombre, tipoAct, intereses, restriccio
         presupuesto,
         planesSugeridos: [],
         planGanador: null,
-        participantes: []
+        participantes: [idHost]
     };
     const result = await db.collection('salas').insertOne(newSala);
 
