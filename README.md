@@ -35,26 +35,77 @@ El servidor queda escuchando en `http://localhost:3001`.
 
 ---
 
+## Estructura del proyecto
+
+```
+back-planazo/
+├── src/
+│   ├── app.js
+│   ├── controllers/
+│   │   ├── planController.js
+│   │   ├── salaController.js
+│   │   └── userController.js
+│   ├── data/
+│   │   ├── connection.js
+│   │   ├── planData.js
+│   │   ├── salaData.js
+│   │   └── userData.js
+│   ├── middleware/
+│   │   └── authMiddleware.js
+│   ├── routes/
+│   │   ├── planRoutes.js
+│   │   ├── salaRoutes.js
+│   │   └── userRoutes.js
+│   └── services/
+│       ├── planService.js
+│       ├── salaService.js
+│       └── userService.js
+├── .env
+├── package.json
+└── README.md
+```
+
+---
+
 ## Endpoints
 
-### Autenticación
+> 🔒 = requiere header `Authorization: Bearer <token>`
+
+---
+
+### Usuarios — `/api/users`
+
+| Método | Endpoint | Parámetros | Requiere token | Descripción |
+|--------|----------|------------|:--------------:|-------------|
+| `POST` | `/api/users/register` | **Body:** `name`, `email`, `password`, `fechaNacimiento` | No | Registra un nuevo usuario |
+| `POST` | `/api/users/login` | **Body:** `email`, `password` | No | Inicia sesión y devuelve un JWT |
+| `GET` | `/api/users/` | — | 🔒 Sí | Devuelve todos los usuarios registrados |
+| `GET` | `/api/users/:id` | **Param:** `id` (ObjectId del usuario) | 🔒 Sí | Devuelve un usuario por su ID |
+| `PUT` | `/api/users/agregarPreferencias/:id` | **Param:** `id` · **Body:** `preferencias` (string[]) | No | Agrega preferencias al perfil del usuario |
 
 #### `POST /api/users/register`
-Registra un nuevo usuario.
 
 **Body:**
 ```json
 {
   "name": "Juan Pérez",
   "email": "juan@ejemplo.com",
-  "password": "miPassword123"
+  "password": "miPassword123",
+  "fechaNacimiento": "2000-05-15"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "message": "Usuario registrado exitosamente",
+  "userId": "<ObjectId>"
 }
 ```
 
 ---
 
 #### `POST /api/users/login`
-Inicia sesión y devuelve un JWT.
 
 **Body:**
 ```json
@@ -75,48 +126,74 @@ Inicia sesión y devuelve un JWT.
 
 ---
 
-#### `GET /api/users/` 🔒
-Devuelve todos los usuarios registrados. Requiere token JWT.
+### Salas — `/api/salas`
 
----
+| Método | Endpoint | Parámetros | Requiere token | Descripción |
+|--------|----------|------------|:--------------:|-------------|
+| `GET` | `/api/salas/` | — | 🔒 Sí | Devuelve todas las salas |
+| `POST` | `/api/salas/crearSala` | **Body:** `idHost`, `nombre`, `tipoAct`, `intereses`, `restricciones`, `ubicacion`, `fecha`, `hora`, `presupuesto` | 🔒 Sí | Crea una nueva sala |
+| `GET` | `/api/salas/:id` | **Param:** `id` (ObjectId de la sala) | No | Devuelve una sala por su ID |
+| `DELETE` | `/api/salas/borrarSala/:id` | **Param:** `id` (ObjectId de la sala) | 🔒 Sí | Elimina una sala |
+| `PUT` | `/api/salas/agregarParticipante/:id` | **Param:** `id` · **Body:** `idParticipante` | 🔒 Sí | Agrega un participante a la sala |
+| `PUT` | `/api/salas/sugerir/:id` | **Param:** `id` (ObjectId de la sala) | 🔒 Sí | Genera planes con IA y los agrega a la sala |
+| `GET` | `/api/salas/obtenerPlanes/:id` | **Param:** `id` (ObjectId de la sala) | 🔒 Sí | Devuelve los planes sugeridos de la sala |
+| `PUT` | `/api/salas/:idSala/votarPlan/:idPlan` | **Param:** `idSala`, `idPlan` | 🔒 Sí | Registra un voto para un plan sugerido |
+| `PUT` | `/api/salas/planGanador/:id` | **Param:** `id` (ObjectId de la sala) | No | Determina el plan ganador por votos y lo guarda en el historial de cada participante |
 
-### Planes
-
-Todos los endpoints de planes requieren el header:
-```
-Authorization: Bearer <token>
-```
-
----
-
-#### `POST /api/plans/suggest` 🔒
-Genera 5 sugerencias de planes para el grupo usando IA.
+#### `POST /api/salas/crearSala`
 
 **Body:**
+```json
+{
+  "idHost": "<ObjectId del usuario>",
+  "nombre": "Noche de viernes",
+  "tipoAct": "música en vivo",
+  "intereses": ["cerveza artesanal", "baile"],
+  "restricciones": ["vegetariano"],
+  "ubicacion": "Palermo",
+  "fecha": "2026-07-05",
+  "hora": "21:00",
+  "presupuesto": "medio"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "message": "Sala creada exitosamente",
+  "salaId": "<ObjectId>"
+}
+```
+
+---
+
+### Planes — `/api/plans`
+
+| Método | Endpoint | Parámetros | Requiere token | Descripción |
+|--------|----------|------------|:--------------:|-------------|
+| `POST` | `/api/plans/suggest` | **Body:** ver tabla de campos | 🔒 Sí | Genera 5 sugerencias de planes usando IA |
+| `GET` | `/api/plans/historial` | — | 🔒 Sí | Devuelve el historial de consultas del usuario autenticado |
+
+#### `POST /api/plans/suggest`
 
 | Campo | Tipo | Requerido | Descripción |
 |---|---|---|---|
-| `cantidadPersonas` | number | Si no se envían los siguientes dos | Total de personas |
-| `cantidadChicos` | number | Si no se envía el anterior | Cantidad de chicos |
-| `cantidadChicas` | number | Si no se envía `cantidadPersonas` | Cantidad de chicas |
+| `cantidadPersonas` | number | No | Total de personas del grupo |
 | `preferencias` | string[] | No | Ej: `["música en vivo", "aire libre"]` |
 | `restriccionesComida` | string[] | No | Ej: `["vegetariano", "sin gluten"]` |
 | `presupuesto` | string | No | `"bajo"`, `"medio"` o `"alto"` |
 | `zona` | string | No | Zona preferida, ej: `"Palermo"` |
-| `ubicacion` | string | No | Ubicación actual del grupo para priorizar cercanía |
 | `disponibilidad` | string | No | Ej: `"noche del sábado"` |
 | `edadPromedio` | number | No | Edad promedio del grupo |
 
 **Ejemplo:**
 ```json
 {
-  "cantidadChicos": 3,
-  "cantidadChicas": 2,
+  "cantidadPersonas": 5,
   "preferencias": ["música en vivo", "cerveza artesanal"],
   "restriccionesComida": ["vegetariano"],
   "presupuesto": "medio",
   "zona": "Palermo",
-  "ubicacion": "Av. Santa Fe y Callao, Buenos Aires",
   "disponibilidad": "noche del sábado",
   "edadPromedio": 25
 }
@@ -143,7 +220,6 @@ Genera 5 sugerencias de planes para el grupo usando IA.
 ---
 
 #### `GET /api/plans/historial` 🔒
-Devuelve el historial de consultas del usuario autenticado.
 
 **Respuesta:**
 ```json
@@ -152,8 +228,8 @@ Devuelve el historial de consultas del usuario autenticado.
     {
       "_id": "...",
       "userId": "...",
-      "input": { ... },
-      "planes": [ ... ],
+      "input": { "..." : "..." },
+      "planes": [ "..." ],
       "createdAt": "2025-01-01T00:00:00.000Z"
     }
   ]
