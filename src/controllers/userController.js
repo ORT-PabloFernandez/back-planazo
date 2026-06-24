@@ -84,3 +84,17 @@ export async function agregarPreferenciasController(req, res) {
         res.status(500).json({message: "Error interno al agregar preferencias"});
     }
 }
+
+
+export async function listarPlanesGanadoresController(req, res) {
+    try{
+        const user = await getUserByIdService(req.params.id);
+        if(!user){
+            return res.status(400).json({message: "El usuario no existe"});
+        }
+        
+        res.json(user.historialPlanes || "No hay planes ganadores");
+    } catch(error){
+        res.status(500).json({message: "Error al listar planes ganadores"});
+    }
+}
