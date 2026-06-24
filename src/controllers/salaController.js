@@ -123,8 +123,9 @@ export async function agregarPlanController(req, res) {
 
         const { participantes, preferencias, restriccionesComida, presupuesto, zona, disponibilidad, edadPromedio } = sala 
         const cantidadParticipantes = participantes.length; 
+        const edadPromCalculada = await calcularEdadPromedio(participantes);
         const planes = await 
-        sugerirPlanes({ cantidadParticipantes, preferencias, restriccionesComida, presupuesto, zona, disponibilidad, edadPromedio })
+        sugerirPlanes({ cantidadParticipantes, preferencias, restriccionesComida, presupuesto, zona, disponibilidad, edadPromCalculada })
         
         const planesConId = planes.map((plan) => ({ _id: new ObjectId(), ...plan, votos: 0 }));
         sala.planesSugeridos = planesConId;
@@ -133,6 +134,30 @@ export async function agregarPlanController(req, res) {
     } catch {
         res.status(500).json({ message: "Error al agregar planes"});
     }
+}
+
+async function calcularEdadPromedio(participantes) {
+    const hoy = new Date();
+    const años = await Promise.all(
+        participantes.map(async (participante) => {
+            const user = await findUserById(participante);
+            if (!user || !user.fechaNacimiento) {
+                return null;
+            }
+            return new Date(user.fechaNacimiento).getFullYear();
+        })
+    );
+
+    const edades = años
+        .filter((año) => año !== null)
+        .map((año) => hoy.getFullYear() - año);
+
+    if (edades.length === 0) {
+        return 0;
+    }
+
+    const acum = edades.reduce((acc, edad) => acc + edad, 0);
+    return (acum / edades.length);
 }
 
 export async function deleteSalaController(req, res) {
