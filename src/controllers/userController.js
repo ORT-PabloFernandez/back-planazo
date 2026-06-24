@@ -98,3 +98,21 @@ export async function listarPlanesGanadoresController(req, res) {
         res.status(500).json({message: "Error al listar planes ganadores"});
     }
 }
+
+export async function agregarFotoController(req, res) {
+    try{
+        const {foto} = req.body;
+        const user = await getUserByIdService(req.params.id);
+        if(!user){
+            return res.status(400).json({message: "El usuario no existe"});
+        }
+        if(!foto) {
+            return res.status(400).json({message: "Se debe agregar una foto"});
+        }
+        user.foto = foto;
+        await updateUserService(req.params.id, user);
+        res.status(201).json({message: "Foto agregada exitosamente"});
+    } catch(error){
+        res.status(500).json({message: "Error al agregar foto"});
+    }
+}
