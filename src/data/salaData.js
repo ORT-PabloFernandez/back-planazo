@@ -65,6 +65,4 @@ export async function sumarVoto(idSala, idPlan) {
         throw new Error("Plan no encontrado");
     }
 }
-//deuda tecnincaaaaaa
-export async function contarVotos(idSala) {}
 
