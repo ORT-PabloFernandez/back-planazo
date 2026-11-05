@@ -71,6 +71,8 @@ back-planazo/
 
 > 🔒 = requiere header `Authorization: Bearer <token>`
 
+> Traductor (`/api/translate`) y texto a audio (`/api/tts`): ver [docs/traductor-y-audio.md](docs/traductor-y-audio.md).
+
 ---
 
 ### Usuarios — `/api/users`
