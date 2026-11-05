@@ -4,6 +4,6 @@ import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const translateRouter = express.Router();
 
-translateRouter.post("/", authMiddleware, traducirTexto);
+translateRouter.post("/", traducirTexto);
 
 export default translateRouter;
