@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import planRoutes from './routes/planRoutes.js';
+import translateRoutes from './routes/translateRoutes.js';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // Rutas
 app.use("/api/users", userRoutes);
 app.use("/api/plans", planRoutes);
+app.use("/api/translate", translateRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {

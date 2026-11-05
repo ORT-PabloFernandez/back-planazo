@@ -72,7 +72,7 @@ export async function generarSugerencias(datos) {
     const userPrompt = buildUserPrompt(datos);
 
     const response = await openai.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: userPrompt },
