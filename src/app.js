@@ -4,6 +4,7 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import planRoutes from './routes/planRoutes.js';
 import translateRoutes from './routes/translateRoutes.js';
+import salaRouters from './routes/salaRoutes.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/translate", translateRoutes);
+app.use("/api/salas", salaRouters);
 
 // Ruta base
 app.get('/', (req, res) => {

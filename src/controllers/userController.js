@@ -1,4 +1,4 @@
-import { getUsers, registerUserService, loginUserService } from "../services/userService.js";
+import { getUsers, registerUserService, loginUserService, getUserByIdService, updateUserService } from "../services/userService.js";
 import jwt from "jsonwebtoken";
 
 export async function getAllUsers(req, res) {
@@ -11,7 +11,12 @@ export async function getAllUsers(req, res) {
 }
 
 export async function getUserById(req, res) {
-    res.json({message: `Usuario con ID ${req.params.id}`});
+    try{
+        const user = await getUserByIdService(req.params.id);
+        res.json(user);
+    }catch(error){
+        res.status(404).json({message: "Usuario no encontrado"});
+    }
 }
 
 export async function loginUserController(req, res) {
@@ -38,14 +43,14 @@ export async function loginUserController(req, res) {
 }
 
 export async function registerUserController(req, res) {
-    const {name, email, password} = req.body;
+    const {name, email, password, fechaNacimiento} = req.body;
 
     if(!name || !email || !password) {
         return res.status(400).json({message: "Name, email y password son requeridos"});
     }
 
     try {
-        const result = await registerUserService({name, email, password});
+        const result = await registerUserService({name, email, password, fechaNacimiento});
         res.status(201).json({message: "Usuario registrado exitosamente", userId: result.insertedId});
     } catch (error) {
         if(error.message === 'El email ya está registrado') {
@@ -53,5 +58,61 @@ export async function registerUserController(req, res) {
         }
         console.error(error);
         res.status(500).json({message: "Error interno en el registro de usuario"});
+    }
+}
+
+export async function agregarPreferenciasController(req, res) {
+    try{
+    const {preferencias} = req.body;
+    const user = await getUserByIdService(req.params.id);
+
+    if(!user){
+        return res.status(400).json({message: "El usuario no existe"});
+    }
+
+    if(!preferencias) {
+        return res.status(400).json({message: "Se debe agregar una preferencia"});
+    }
+
+    preferencias.forEach(preferencia => {
+        user.preferencias.push(preferencia);
+    });
+    
+    await updateUserService(req.params.id, user);
+    res.status(201).json({message: "Preferencias agregadas exitosamente"});
+    } catch(error){
+        res.status(500).json({message: "Error interno al agregar preferencias"});
+    }
+}
+
+
+export async function listarPlanesGanadoresController(req, res) {
+    try{
+        const user = await getUserByIdService(req.params.id);
+        if(!user){
+            return res.status(400).json({message: "El usuario no existe"});
+        }
+        
+        res.json(user.historialPlanes || "No hay planes ganadores");
+    } catch(error){
+        res.status(500).json({message: "Error al listar planes ganadores"});
+    }
+}
+
+export async function agregarFotoController(req, res) {
+    try{
+        const {foto} = req.body;
+        const user = await getUserByIdService(req.params.id);
+        if(!user){
+            return res.status(400).json({message: "El usuario no existe"});
+        }
+        if(!foto) {
+            return res.status(400).json({message: "Se debe agregar una foto"});
+        }
+        user.foto = foto;
+        await updateUserService(req.params.id, user);
+        res.status(201).json({message: "Foto agregada exitosamente"});
+    } catch(error){
+        res.status(500).json({message: "Error al agregar foto"});
     }
 }

@@ -1,10 +1,8 @@
 import { generarSugerencias } from "../services/planService.js";
 import { savePlanSuggestion, getPlansByUser } from "../data/planData.js";
 
-export async function sugerirPlanes(req, res) {
+export async function sugerirPlanes(data) {
     const {
-        cantidadChicos,
-        cantidadChicas,
         cantidadPersonas,
         preferencias,
         restriccionesComida,
@@ -12,23 +10,9 @@ export async function sugerirPlanes(req, res) {
         zona,
         disponibilidad,
         edadPromedio,
-        ubicacion,
-    } = req.body;
-
-    const tieneConteo =
-        cantidadPersonas != null ||
-        (cantidadChicos != null && cantidadChicas != null);
-
-    if (!tieneConteo) {
-        return res.status(400).json({
-            message:
-                "Debés indicar cantidadPersonas, o bien cantidadChicos y cantidadChicas",
-        });
-    }
+    } = data;
 
     const input = {
-        cantidadChicos,
-        cantidadChicas,
         cantidadPersonas,
         preferencias,
         restriccionesComida,
@@ -36,22 +20,22 @@ export async function sugerirPlanes(req, res) {
         zona,
         disponibilidad,
         edadPromedio,
-        ubicacion,
     };
 
     try {
         const planes = await generarSugerencias(input);
 
-        if (req.user) {
-            await savePlanSuggestion(req.user._id, input, planes).catch((err) =>
-                console.error("Error al guardar planes:", err)
-            );
-        }
+        // if (req.user) {
+        //     await savePlanSuggestion(req.user._id, input, planes).catch((err) =>
+        //         console.error("Error al guardar planes:", err)
+        //     );
+        // }
 
-        res.json({ planes });
+        return planes;
     } catch (error) {
         console.error("Error al generar sugerencias:", error);
-        res.status(500).json({ message: "Error al generar sugerencias de planes" });
+        throw error ("Error al generar sugerencias de planes");
+        //res.status(500).json({ message: "Error al generar sugerencias de planes" });
     }
 }
 
