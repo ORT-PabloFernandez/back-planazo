@@ -6,6 +6,7 @@ import planRoutes from './routes/planRoutes.js';
 import translateRoutes from './routes/translateRoutes.js';
 import salaRouters from './routes/salaRoutes.js';
 import ttsRoutes from './routes/ttsRoutes.js';
+import imagenRoutes from './routes/imagenRoutes.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/api/plans", planRoutes);
 app.use("/api/translate", translateRoutes);
 app.use("/api/salas", salaRouters);
 app.use("/api/tts", ttsRoutes);
+app.use("/api/imagenes", imagenRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {
